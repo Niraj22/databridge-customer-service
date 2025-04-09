@@ -1,0 +1,807 @@
+---
+openapi: 3.0.1
+info:
+  title: DataBridge Customer Service API
+  version: v1
+  description: API for managing customers, addresses, and preferences
+components:
+  securitySchemes:
+    bearer_auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+paths:
+  "/api/customers/{customer_id}/addresses":
+    parameters:
+    - name: customer_id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Retrieves all addresses for a customer
+      tags:
+      - Addresses
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: addresses found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    customer_id:
+                      type: integer
+                    address_type:
+                      type: string
+                    street:
+                      type: string
+                    city:
+                      type: string
+                    state:
+                      type: string
+                      nullable: true
+                    postal_code:
+                      type: string
+                    country:
+                      type: string
+                    is_default:
+                      type: boolean
+                    created_at:
+                      type: string
+                      format: date-time
+                    updated_at:
+                      type: string
+                      format: date-time
+        '404':
+          description: customer not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+    post:
+      summary: Creates an address for a customer
+      tags:
+      - Addresses
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '201':
+          description: address created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  customer_id:
+                    type: integer
+                  address_type:
+                    type: string
+                  street:
+                    type: string
+                  city:
+                    type: string
+                  state:
+                    type: string
+                    nullable: true
+                  postal_code:
+                    type: string
+                  country:
+                    type: string
+                  is_default:
+                    type: boolean
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                address_type:
+                  type: string
+                  enum:
+                  - shipping
+                  - billing
+                  example: shipping
+                street:
+                  type: string
+                  example: 123 Main St
+                city:
+                  type: string
+                  example: New York
+                state:
+                  type: string
+                  example: NY
+                postal_code:
+                  type: string
+                  example: '10001'
+                country:
+                  type: string
+                  example: US
+                is_default:
+                  type: boolean
+                  example: true
+              required:
+              - address_type
+              - street
+              - city
+              - postal_code
+              - country
+  "/api/customers/{customer_id}/addresses/{id}":
+    parameters:
+    - name: customer_id
+      in: path
+      required: true
+      schema:
+        type: integer
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Retrieves an address
+      tags:
+      - Addresses
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: address found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  customer_id:
+                    type: integer
+                  address_type:
+                    type: string
+                  street:
+                    type: string
+                  city:
+                    type: string
+                  state:
+                    type: string
+                    nullable: true
+                  postal_code:
+                    type: string
+                  country:
+                    type: string
+                  is_default:
+                    type: boolean
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+    put:
+      summary: Updates an address
+      tags:
+      - Addresses
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: address updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  customer_id:
+                    type: integer
+                  address_type:
+                    type: string
+                  street:
+                    type: string
+                  city:
+                    type: string
+                  state:
+                    type: string
+                    nullable: true
+                  postal_code:
+                    type: string
+                  country:
+                    type: string
+                  is_default:
+                    type: boolean
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                street:
+                  type: string
+                  example: 456 New St
+                city:
+                  type: string
+                  example: Boston
+                state:
+                  type: string
+                  example: MA
+                postal_code:
+                  type: string
+                  example: '02110'
+                country:
+                  type: string
+                  example: US
+                is_default:
+                  type: boolean
+                  example: true
+    delete:
+      summary: Deletes an address
+      tags:
+      - Addresses
+      security:
+      - bearer_auth: []
+      responses:
+        '204':
+          description: address deleted
+  "/api/auth/register":
+    post:
+      summary: Registers a new customer
+      tags:
+      - Authentication
+      parameters: []
+      responses:
+        '201':
+          description: customer registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      email:
+                        type: string
+                      name:
+                        type: string
+                      role:
+                        type: string
+                      status:
+                        type: string
+                      created_at:
+                        type: string
+                        format: date-time
+        '422':
+          description: invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: user@example.com
+                password:
+                  type: string
+                  example: password123
+                name:
+                  type: string
+                  example: John Doe
+                role:
+                  type: string
+                  enum:
+                  - customer
+                  - admin
+                  example: customer
+              required:
+              - email
+              - password
+              - name
+  "/api/auth/login":
+    post:
+      summary: Authenticates customer
+      tags:
+      - Authentication
+      parameters: []
+      responses:
+        '200':
+          description: customer authenticated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      email:
+                        type: string
+                      name:
+                        type: string
+                      role:
+                        type: string
+                      status:
+                        type: string
+                      created_at:
+                        type: string
+                        format: date-time
+        '401':
+          description: invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: user@example.com
+                password:
+                  type: string
+                  example: password123
+              required:
+              - email
+              - password
+  "/api/customers":
+    get:
+      summary: Retrieves all customers
+      tags:
+      - Customers
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: page
+        in: query
+        required: false
+        description: Page number
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        description: Items per page
+        schema:
+          type: integer
+      - name: status
+        in: query
+        required: false
+        description: Filter by status
+        schema:
+          type: string
+      - name: role
+        in: query
+        required: false
+        description: Filter by role
+        schema:
+          type: string
+      - name: sort_by
+        in: query
+        required: false
+        description: Field to sort by
+        schema:
+          type: string
+      - name: sort_direction
+        in: query
+        required: false
+        enum:
+        - asc
+        - desc
+        description: "Sort direction:\n * `asc` \n * `desc` \n "
+        schema:
+          type: string
+      responses:
+        '200':
+          description: customers found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    email:
+                      type: string
+                    name:
+                      type: string
+                    role:
+                      type: string
+                    status:
+                      type: string
+                    created_at:
+                      type: string
+                      format: date-time
+                    updated_at:
+                      type: string
+                      format: date-time
+                    last_login_at:
+                      type: string
+                      format: date-time
+                      nullable: true
+        '403':
+          description: forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+    post:
+      summary: Creates a customer
+      tags:
+      - Customers
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '201':
+          description: customer created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  email:
+                    type: string
+                  name:
+                    type: string
+                  role:
+                    type: string
+                  status:
+                    type: string
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+                  last_login_at:
+                    type: string
+                    format: date-time
+                    nullable: true
+        '422':
+          description: invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: user@example.com
+                password:
+                  type: string
+                  example: password123
+                name:
+                  type: string
+                  example: John Doe
+                role:
+                  type: string
+                  enum:
+                  - customer
+                  - admin
+                  example: customer
+              required:
+              - email
+              - password
+              - name
+  "/api/customers/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Retrieves a customer
+      tags:
+      - Customers
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: customer found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  email:
+                    type: string
+                  name:
+                    type: string
+                  role:
+                    type: string
+                  status:
+                    type: string
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+                  last_login_at:
+                    type: string
+                    format: date-time
+                    nullable: true
+        '404':
+          description: customer not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+    put:
+      summary: Updates a customer
+      tags:
+      - Customers
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: customer updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  email:
+                    type: string
+                  name:
+                    type: string
+                  role:
+                    type: string
+                  status:
+                    type: string
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+                  last_login_at:
+                    type: string
+                    format: date-time
+                    nullable: true
+        '404':
+          description: customer not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: updated@example.com
+                name:
+                  type: string
+                  example: Updated Name
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - inactive
+                  - suspended
+                  example: active
+    delete:
+      summary: Deactivates a customer
+      tags:
+      - Customers
+      security:
+      - bearer_auth: []
+      responses:
+        '204':
+          description: customer deactivated
+        '404':
+          description: customer not found
+  "/api/customers/{customer_id}/preferences":
+    parameters:
+    - name: customer_id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Retrieves all preferences for a customer
+      tags:
+      - Preferences
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: preferences found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    customer_id:
+                      type: integer
+                    key:
+                      type: string
+                    value:
+                      type: string
+                    created_at:
+                      type: string
+                      format: date-time
+                    updated_at:
+                      type: string
+                      format: date-time
+  "/api/customers/{customer_id}/preferences/{id}":
+    parameters:
+    - name: customer_id
+      in: path
+      required: true
+      schema:
+        type: integer
+    - name: id
+      in: path
+      description: Preference key
+      required: true
+      schema:
+        type: string
+    get:
+      summary: Retrieves a preference
+      tags:
+      - Preferences
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: preference found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  customer_id:
+                    type: integer
+                  key:
+                    type: string
+                  value:
+                    type: string
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+    put:
+      summary: Updates a preference
+      tags:
+      - Preferences
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: preference updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  customer_id:
+                    type: integer
+                  key:
+                    type: string
+                  value:
+                    type: string
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: string
+                  example: 'false'
+              required:
+              - value
+    delete:
+      summary: Deletes a preference
+      tags:
+      - Preferences
+      security:
+      - bearer_auth: []
+      responses:
+        '204':
+          description: preference deleted
+servers:
+- url: http://{defaultHost}
+  variables:
+    defaultHost:
+      default: localhost:3001
