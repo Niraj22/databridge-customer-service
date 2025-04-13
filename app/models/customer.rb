@@ -58,8 +58,19 @@ class Customer < ApplicationRecord
       created_at: created_at.iso8601
     }
     
-    publisher = DataBridgeShared::Clients::EventPublisher.new
-    publisher.publish('CustomerCreated', event_data)
+    begin
+      kafka_config = Rails.application.credentials.kafka
+      publisher = DataBridgeShared::Clients::EventPublisher.new(
+        seed_brokers: kafka_config[:brokers],
+        client_id: kafka_config[:client_id]
+      )
+      
+      publisher.publish('CustomerCreated', event_data)
+      Rails.logger.info "Successfully published CustomerCreated event"
+    rescue => e
+      Rails.logger.error "Failed to publish CustomerCreated event: #{e.message}"
+      # Continue without crashing
+    end
   end
   
   def publish_updated_event
@@ -70,8 +81,19 @@ class Customer < ApplicationRecord
       updated_at: updated_at.iso8601
     }
     
-    publisher = DataBridgeShared::Clients::EventPublisher.new
-    publisher.publish('CustomerUpdated', event_data)
+    begin
+      kafka_config = Rails.application.credentials.kafka
+      publisher = DataBridgeShared::Clients::EventPublisher.new(
+        seed_brokers: kafka_config[:brokers],
+        client_id: kafka_config[:client_id]
+      )
+      
+      publisher.publish('CustomerUpdated', event_data)
+      Rails.logger.info "Successfully published CustomerUpdated event"
+    rescue => e
+      Rails.logger.error "Failed to publish CustomerUpdated event: #{e.message}"
+      # Continue without crashing
+    end
   end
   
   private

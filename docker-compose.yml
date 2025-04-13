@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+        RUBY_VERSION: '3.2.2'
+        PG_MAJOR: '14'
+    command: ./bin/dev
+    volumes:
+      - .:/app
+      - bundle-volume:/usr/local/bundle
+    ports:
+      - '3001:3001'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    links:
+      - db:db
+    depends_on:
+      - db
+    stdin_open: true
+    tty: true
+    environment:
+      DB_HOST: db
+      DB_PASSWORD: password
+      DB_USER: postgres
+  db:
+    image: postgres:14.5
+    volumes:
+      - db-volume:/var/lib/postgresql/data
+    ports:
+      - '5433:5432'
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+
+volumes:
+  bundle-volume:
+  db-volume:

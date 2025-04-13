@@ -14,7 +14,17 @@ class Preference < ApplicationRecord
         updated_at: updated_at.iso8601
       }
       
-      publisher = DataBridgeShared::Clients::EventPublisher.new
-      publisher.publish('CustomerPreferenceChanged', event_data)
+      begin
+        kafka_config = Rails.application.credentials.kafka
+        publisher = DataBridgeShared::Clients::EventPublisher.new(
+          seed_brokers: kafka_config[:brokers],
+          client_id: kafka_config[:client_id]
+        )
+        
+        publisher.publish('CustomerPreferenceChanged', event_data)
+        Rails.logger.info "Successfully published CustomerPreferenceChanged event"
+      rescue => e
+        Rails.logger.error "Failed to publish CustomerPreferenceChanged event: #{e.message}"
+      end
     end
   end
