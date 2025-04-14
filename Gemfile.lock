@@ -1,5 +1,6 @@
-PATH
-  remote: databridge_shared
+GIT
+  remote: https://github.com/Niraj22/databridge_shared
+  revision: bdf4d4c89d583f910067b670501139a78fd21557
   specs:
     databridge_shared (0.1.0)
       avro_turf (~> 1.18)
@@ -184,7 +185,7 @@ GEM
     puma (6.6.0)
       nio4r (~> 2.0)
     racc (1.8.1)
-    rack (3.1.12)
+    rack (3.1.13)
     rack-cors (2.0.2)
       rack (>= 2.0.0)
     rack-session (2.1.0)
@@ -276,14 +277,12 @@ GEM
     zeitwerk (2.7.2)
 
 PLATFORMS
-  aarch64-linux
   aarch64-linux-gnu
   aarch64-linux-musl
   arm-linux-gnu
   arm-linux-musl
   arm64-darwin
   x86_64-darwin
-  x86_64-linux
   x86_64-linux-gnu
   x86_64-linux-musl
 

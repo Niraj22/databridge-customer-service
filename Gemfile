@@ -47,8 +47,6 @@ group :development do
   # gem "spring"
 end
 
-gem 'bcrypt', '~> 3.1.7'
-
 gem 'rswag-api'
 gem 'rswag-ui'
-gem 'databridge_shared', path: './databridge_shared'
+gem 'databridge_shared', git: 'https://github.com/Niraj22/databridge_shared'

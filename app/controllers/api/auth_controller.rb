@@ -4,28 +4,32 @@ module Api
   
       def login
         customer = Customer.find_by(email: params[:email])
-        
-        if customer&.authenticate(params[:password])
-          customer.update(last_login_at: Time.current)
-          event_publisher = DataBridgeShared::Clients::EventPublisher.new
-          event_publisher.publish('user.login.success', { 
-            user_id: customer.id, 
-            timestamp: Time.current.iso8601 
-          })
-          
-          render json: { user: customer }, status: :ok
-        else
-          if params[:email].present?
-            event_publisher = DataBridgeShared::Clients::EventPublisher.new
-            event_publisher.publish('user.login.failed', { 
-              email: params[:email], 
-              timestamp: Time.current.iso8601 
-            })
+        kafka_config = Rails.application.credentials.kafka
+      
+        begin
+          if customer&.authenticate(params[:password])
+            customer.update(last_login_at: Time.current)
+      
+            publish_event('user.login.success', {
+              user_id: customer.id,
+              timestamp: Time.current.iso8601
+            }, kafka_config)
+      
+            render json: { user: customer }, status: :ok
+          else
+            publish_event('user.login.failed', {
+              email: params[:email],
+              timestamp: Time.current.iso8601
+            }, kafka_config) if params[:email].present?
+      
+            render json: { error: 'Invalid credentials' }, status: :unauthorized
           end
-          
-          render json: { error: 'Invalid credentials' }, status: :unauthorized
+        rescue => e
+          Rails.logger.error("Login error: #{e.message}")
+          render json: { error: 'Something went wrong' }, status: :internal_server_error
         end
       end
+      
   
       def register
         customer = Customer.new(customer_params)
@@ -70,6 +74,13 @@ module Api
   
       def auth_secret
         Rails.application.credentials.secret_key_base
+      end
+
+      def publish_event(event_name, payload, kafka_config)
+        DataBridgeShared::Clients::EventPublisher.new(
+          seed_brokers: kafka_config[:brokers],
+          client_id: kafka_config[:client_id]
+        ).publish(event_name, payload)
       end
     end
   end
