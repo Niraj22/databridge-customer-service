@@ -12,8 +12,8 @@
         )
         
         # Register event handlers for events this service cares about
-        subscriber.subscribe('OrderCreated', Events::Subscribers::OrderCreatedEventHandler.new)
-        subscriber.subscribe('OrderStatusChanged', Events::Subscribers::OrderStatusChangedEventHandler.new)
+        # subscriber.subscribe('OrderCreated', Events::Subscribers::OrderCreatedEventHandler.new)
+        # subscriber.subscribe('OrderStatusChanged', Events::Subscribers::OrderStatusChangedEventHandler.new)
         
         Rails.logger.info "Customer Service event subscribers registered successfully"
       rescue => e
