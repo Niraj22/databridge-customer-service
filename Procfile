@@ -1,1 +1,1 @@
-web: bundle exec puma -C config/puma.rb -e $RAILS_ENV
+web: PORT=3002 bundle exec puma -C config/puma.rb -e $RAILS_ENV
